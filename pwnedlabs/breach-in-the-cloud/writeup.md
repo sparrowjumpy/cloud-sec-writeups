@@ -1,32 +1,32 @@
-## Scenario
+##_Scenario
 
-We've been alerted to a potential security incident. The Huge Logistics security team have provided you with AWS keys of an account that saw unusual activity, as well as AWS CloudTrail logs around the time of the activity. We need your expertise to confirm the breach by analyzing our CloudTrail logs, identifying the compromised AWS service and any data that was exfiltrated.
+We've_been_alerted_to_a_potential_security_incident._The_Huge_Logistics_security_team_have_provided_you_with_AWS_keys_of_an_account_that_saw_unusual_activity,_as_well_as_AWS_CloudTrail_logs_around_the_time_of_the_activity._We_need_your_expertise_to_confirm_the_breach_by_analyzing_our_CloudTrail_logs,_identifying_the_compromised_AWS_service_and_any_data_that_was_exfiltrated.
 
-Access key id: **REDACTED_FOR_LAB**
-Secret access key: **REDACTED_FOR_LAB**
+Access_key_id:_**REDACTED_FOR_LAB**
+Secret_access_key:_**REDACTED_FOR_LAB**
 
-Shows this:
-![Screenshot](images/pasted_image 20250518211436.png)
-Tried to access this bucket:
-![Screenshot](images/pasted_image 20250518211819.png)
-The user was using AssumedRole to assume as admin:
-![Screenshot](images/pasted_image 20250518212624.png)
-Used the command to try assuming role and it worked:
-aws sts assume-role \
-  --role-arn arn:aws:iam::107513503799:role/AdminRole \
-  --role-session-name MySession
-![Screenshot](images/pasted_image 20250518212759.png)
-Configured the profile:
-aws configure --profile assumed-admin
-aws configure set profile.assumed-admin.aws_session_token "<session_token>"
+Shows_this:
+![Screenshot](images/pasted_image_20250518211436.png)
+Tried_to_access_this_bucket:
+![Screenshot](images/pasted_image_20250518211819.png)
+The_user_was_using_AssumedRole_to_assume_as_admin:
+![Screenshot](images/pasted_image_20250518212624.png)
+Used_the_command_to_try_assuming_role_and_it_worked:
+aws_sts_assume-role_\
+__--role-arn_arn:aws:iam::107513503799:role/AdminRole_\
+__--role-session-name_MySession
+![Screenshot](images/pasted_image_20250518212759.png)
+Configured_the_profile:
+aws_configure_--profile_assumed-admin
+aws_configure_set_profile.assumed-admin.aws_session_token_"<session_token>"
 
-The command aws s3 ls --profile assumed-admin showed access denied:
-![Screenshot](images/pasted_image 20250518212909.png)
+The_command_aws_s3_ls_--profile_assumed-admin_showed_access_denied:
+![Screenshot](images/pasted_image_20250518212909.png)
 
-But command aws s3 ls s3://emergency-data-recovery --profile assumed-admin provided the list of files:
-![Screenshot](images/pasted_image 20250518213016.png)
+But_command_aws_s3_ls_s3://emergency-data-recovery_--profile_assumed-admin_provided_the_list_of_files:
+![Screenshot](images/pasted_image_20250518213016.png)
 
-Downloaded the emergency.txt file with command aws s3 cp s3://emergency-data-recovery/emergency.txt ./ --profile assumed-admin
+Downloaded_the_emergency.txt_file_with_command_aws_s3_cp_s3://emergency-data-recovery/emergency.txt_./_--profile_assumed-admin
 
-The file contained the flag and other sensitive info like credentials:
-![Screenshot](images/pasted_image 20250518213151.png)
+The_file_contained_the_flag_and_other_sensitive_info_like_credentials:
+![Screenshot](images/pasted_image_20250518213151.png)
