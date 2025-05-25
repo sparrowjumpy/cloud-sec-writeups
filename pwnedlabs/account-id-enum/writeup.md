@@ -1,29 +1,29 @@
-# Scenario
-The ability to expose and leverage even the smallest oversights is a coveted skill. A global Logistics Company has reached out to our cybersecurity company for assistance and have provided the IP address of their website. Your objective? Start the engagement and use this IP address to identify their AWS account ID via a public S3 bucket so we can commence the process of enumeration.
+#_Scenario
+The_ability_to_expose_and_leverage_even_the_smallest_oversights_is_a_coveted_skill._A_global_Logistics_Company_has_reached_out_to_our_cybersecurity_company_for_assistance_and_have_provided_the_IP_address_of_their_website._Your_objective?_Start_the_engagement_and_use_this_IP_address_to_identify_their_AWS_account_ID_via_a_public_S3_bucket_so_we_can_commence_the_process_of_enumeration.
 
-ip address: 54.204.171.32
-Access key id: **REDACTED_FOR_LAB**
-Secret access key: **REDACTED_FOR_LAB** 
+ip_address:_54.204.171.32
+Access_key_id:_**REDACTED_FOR_LAB**
+Secret_access_key:_**REDACTED_FOR_LAB**_
 
-Performed nmap on the target ip which showed http open:
-![Screenshot](images/Pasted image 20250518213649.png)
+Performed_nmap_on_the_target_ip_which_showed_http_open:
+![Screenshot](images/pasted_image_20250518213649.png)
 
-Went to the page and the page source showed mega-big-tech as the s3 bucket.
-![Screenshot](images/Pasted image 20250518213811.png)
+Went_to_the_page_and_the_page_source_showed_mega-big-tech_as_the_s3_bucket.
+![Screenshot](images/pasted_image_20250518213811.png)
 
-The access credentials provided to us our only for checking ID of the S3 bucket (target), it is not our target but we can either use it or our personal account. 
+The_access_credentials_provided_to_us_our_only_for_checking_ID_of_the_S3_bucket_(target),_it_is_not_our_target_but_we_can_either_use_it_or_our_personal_account._
 
-I configured the aws account provided: aws configure --profile pwnedidlab
+I_configured_the_aws_account_provided:_aws_configure_--profile_pwnedidlab
 
-To find ID of the I used the tool: https://github.com/WeAreCloudar/s3-account-search/tree/main
+To_find_ID_of_the_I_used_the_tool:_https://github.com/WeAreCloudar/s3-account-search/tree/main
 
-This tool tried to brute-force discover the AWS Account ID of the owner of the mega-big-tech S3 bucket — using the role I specified: s3-account-search arn:aws:iam::427648302155:role/LeakyBucket mega-big-tech (the role was provided to us by PwnedLabs)
+This_tool_tried_to_brute-force_discover_the_AWS_Account_ID_of_the_owner_of_the_mega-big-tech_S3_bucket_—_using_the_role_I_specified:_s3-account-search_arn:aws:iam::427648302155:role/LeakyBucket_mega-big-tech_(the_role_was_provided_to_us_by_PwnedLabs)
 
-💡 How it works (in simple terms):
-- It uses the role ARN you gave (like a fake identity badge) to try accessing the S3 bucket.
-- It modifies the ARN slightly by replacing the AWS Account ID digit by digit, and sends requests to the bucket.
-- Each time it finds a match (access isn't immediately denied), it keeps the digit and adds the next one, narrowing down the correct account ID.
-- It keeps going until it finds the full 12-digit AWS account ID that owns or is trusted by the bucket.
+💡_How_it_works_(in_simple_terms):
+-_It_uses_the_role_ARN_you_gave_(like_a_fake_identity_badge)_to_try_accessing_the_S3_bucket.
+-_It_modifies_the_ARN_slightly_by_replacing_the_AWS_Account_ID_digit_by_digit,_and_sends_requests_to_the_bucket.
+-_Each_time_it_finds_a_match_(access_isn't_immediately_denied),_it_keeps_the_digit_and_adds_the_next_one,_narrowing_down_the_correct_account_ID.
+-_It_keeps_going_until_it_finds_the_full_12-digit_AWS_account_ID_that_owns_or_is_trusted_by_the_bucket.
 
-Id was found using it which is our flag!
-![Screenshot](images/Pasted image 20250518224459.png)
+Id_was_found_using_it_which_is_our_flag!
+![Screenshot](images/pasted_image_20250518224459.png)
