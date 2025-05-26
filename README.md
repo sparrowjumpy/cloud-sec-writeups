@@ -1,4 +1,4 @@
-# ☁️ Cloud Security Writeups
+# Cloud Security Writeups
 
 Welcome to my personal repository of **cloud security lab walkthroughs and writeups**. This project is focused on practical, real-world challenges across a variety of platforms and services to help sharpen offensive cloud skills.
 
